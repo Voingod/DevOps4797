@@ -67,7 +67,7 @@ function CallAction(method, dataPass, url, sync) {
     
 
     let req = new XMLHttpRequest();
-
+    let data ={};
     req.open(method, apiUrl + url, sync);
 
     req.setRequestHeader("Accept", "application/json");
@@ -78,7 +78,7 @@ function CallAction(method, dataPass, url, sync) {
         if (this.readyState == 4) {
             req.onreadystatechange = null;
             if (this.status == 200 || this.status == 204) {
-                let data = JSON.parse(this.response);
+                data = JSON.parse(this.response);
                 console.log(data);   
             }
             else{
@@ -89,5 +89,5 @@ function CallAction(method, dataPass, url, sync) {
     };
 
     req.send(window.JSON.stringify(dataPass));
-    return JSON.parse(req.response);
+    return data;
 }

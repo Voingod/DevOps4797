@@ -34,7 +34,8 @@ function OvverideDeacivateButtonOnForm(param1, param2, ocrId) {
     let url = "/uds_document_recognitions?fetchXml=" + fetch;
     let entity = Xrm.Page.data.entity;
     //let result = getReleatedEntitiesWithFuhrpark("GET", url, null,false);
-    let result = CallAction("GET", ocrId, url, false)
+    var data = { "Value": ocrId.replace('{', '').replace('}', '') };
+    let result = CallAction("GET", data, url, false)
     // if (result["@odata.count"] < 2) {
     //     //XrmCore.Commands.Deactivate.deactivatePrimaryRecord(param1, param2);
     //     return;
@@ -52,19 +53,20 @@ function OvverideDeacivateButtonOnForm(param1, param2, ocrId) {
             if (success.confirmed) {
                 let deleteFilesActionUrl = "/uds_document_recognitions(" + ocrId.replace('{', '').replace('}', '') + ")/Microsoft.Dynamics.CRM.uds_DeleteFilesFromFuhrparkAction";
                 //getReleatedEntitiesWithFuhrpark("POST", deleteFilesActionUrl, data,true);
-                CallAction("POST", ocrId, deleteFilesActionUrl, true);
+                var data = { "Value": ocrId.replace('{', '').replace('}', '') };
+                CallAction("POST", data, deleteFilesActionUrl, true);
                 return;
                 XrmCore.Commands.Deactivate.deactivatePrimaryRecord(param1, param2);
             }
         });
 }
 
-function CallAction(method, Id, url, sync) {
+function CallAction(method, dataPass, url, sync) {
     const version = window.parent.Xrm.Page.context.getVersion();
     const apiUrl = window.parent.Xrm.Page.context.getClientUrl() + "/api/data/v" + version.slice(0, version.indexOf(".") + 2);
-    var data = { "Value": Id.replace('{', '').replace('}', '') };
+    
 
-    var req = new XMLHttpRequest();
+    let req = new XMLHttpRequest();
 
     req.open(method, apiUrl + url, sync);
 
@@ -86,5 +88,6 @@ function CallAction(method, Id, url, sync) {
         }
     };
 
-    req.send(window.JSON.stringify(data));
+    req.send(window.JSON.stringify(dataPass));
+    return JSON.parse(req.response);
 }
